@@ -1,4 +1,4 @@
-FROM python:2.7.16-alpine
+FROM python:3.8.9
 RUN pip install requests twilio
 WORKDIR /app
 COPY . .

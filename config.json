@@ -1,6 +1,7 @@
 {
-  "current_interview_date_str": "",
-  "enrollment_location_id": "",
+  "minimum_interview_date_str": "February 25, 2023",
+  "current_interview_date_str": "March 1, 2023",
+  "enrollment_location_id": "5020",
   "logfile": "",
 
   "email_from": "",
@@ -11,14 +12,17 @@
   "email_password": "",
 
   "__comment": "Below are optional:",
-  "use_gmail": true,
+  "use_gmail": false,
   "gmail_password": "",
-  "no_email": false,
+  "no_email": true,
   "no_spamming": true,
 
   "notify_osx": false,
   "twilio_account_sid": "",
   "twilio_auth_token": "",
   "twilio_from_number": "example: +18005551234",
-  "twilio_to_number": "example: +18005551234"
+  "twilio_to_number": ["example: +18005551234"],
+
+  "notify_webhook": true,
+  "webhooks_urls":["https://discord.com/api/webhooks/1009154350913949807/kE85x2oajb6S9wa8TNCzRwShDsWKW9mcUMe3EJzQT2rQGzx9OawDf_N2hgX3UzrLdRb5"]
 }
