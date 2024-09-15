@@ -1,15 +1,17 @@
 {
-  "minimum_interview_date_str": "February 25, 2023",
-  "current_interview_date_str": "March 1, 2023",
+  "current_interview_date_str": "September 15, 2024",
   "enrollment_location_id": "5020",
+  "enrollment_location_name": "",
   "logfile": "",
 
   "email_from": "",
+  "email_display_name": "GOES-notify Alerts",
   "email_to": [""],
   "email_server": "localhost",
   "email_port": 25,
   "email_username": "",
   "email_password": "",
+  "email_disable_tls": false,
 
   "__comment": "Below are optional:",
   "use_gmail": false,

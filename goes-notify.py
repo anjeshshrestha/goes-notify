@@ -20,13 +20,14 @@ from datetime import datetime
 from os import path
 from subprocess import check_output
 from distutils.spawn import find_executable
+from email.utils import formataddr
 from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from math import log
 
 EMAIL_TEMPLATE = """
-<p>Good news! New Global Entry appointment(s) available on the following dates:</p>
+<p>Good news! New Global Entry appointment(s) available at %s on the following dates:</p>
 %s
 <p>Your current appointment is on %s</p>
 <p>If this sounds good, please sign in to https://ttp.cbp.dhs.gov/ to reschedule.</p>
@@ -36,9 +37,12 @@ GOES_URL_FORMAT = 'https://ttp.cbp.dhs.gov/schedulerapi/slots?orderBy=soonest&li
 
 def notify_send_email(dates, current_apt, settings, use_gmail=False):
     sender = settings.get('email_from')
-    # If recipient isn't provided, send to self.
-    recipient = settings.get('email_to', sender)
-
+    display_name = settings.get('email_display_name')
+    recipient = settings.get('email_to', sender)  # If recipient isn't provided, send to self.
+    location_id = settings.get("enrollment_location_id")
+    location_name = settings.get("enrollment_location_name")
+    if not location_name:
+            location_name = location_id
     try:
         if use_gmail:
             password = settings.get('gmail_password')
@@ -51,10 +55,12 @@ def notify_send_email(dates, current_apt, settings, use_gmail=False):
         else:
             username = settings.get('email_username').encode('utf-8')
             password = settings.get('email_password').encode('utf-8')
+            disable_tls = settings.get('email_disable_tls')
             server = smtplib.SMTP(settings.get('email_server'), settings.get('email_port'))
             server.ehlo()
-            server.starttls()
-            server.ehlo()
+            if not disable_tls:
+                server.starttls()
+                server.ehlo()
             if username:
                 server.login(username, password)
 
@@ -66,11 +72,14 @@ def notify_send_email(dates, current_apt, settings, use_gmail=False):
 
         dateshtml += "</ul>"
 
-        message = EMAIL_TEMPLATE % (dateshtml, current_apt.strftime('%B %d, %Y'))
+        message = EMAIL_TEMPLATE % (location_name, dateshtml, current_apt.strftime('%B %d, %Y'))
 
         msg = MIMEMultipart()
         msg['Subject'] = subject
-        msg['From'] = sender
+        if display_name:
+            msg['From'] = formataddr((display_name, sender))
+        else: 
+            msg['From'] = sender
         msg['To'] = ','.join(recipient)
         msg['mime-version'] = "1.0"
         msg['content-type'] = "text/html"
@@ -113,13 +122,17 @@ def notify_sms(settings, dates):
             logging.warning('Trying to send SMS, but one of the required Twilio settings is missing or empty')
             return
 
-        # Twilio logs annoyingly, silence that
-        # logging.getLogger('twilio').setLevel(logging.WARNING)
-        # client = Client(account_sid, auth_token)
-        # body = 'New GOES appointment available on %s' % avail_apt
-        # logging.info('Sending SMS.')
-        # client.messages.create(body=body, to=to_number, from_=from_number)
+        location_id = settings.get("enrollment_location_id")
+        location_name = settings.get("enrollment_location_name")
+        if not location_name:
+            location_name = location_id
 
+        # Twilio logs annoyingly, silence that
+        #logging.getLogger('twilio').setLevel(logging.WARNING)
+        #client = Client(account_sid, auth_token)
+        #body = 'New GOES appointment available at %s on %s' % (location_name, avail_apt)
+        #logging.info('Sending SMS.')
+        #client.messages.create(body=body, to=to_number, from_=from_number)
 
 def notify_webhook(settings, dates):
     try:
@@ -140,7 +153,6 @@ def notify_webhook(settings, dates):
     except (KeyError, AssertionError):
         logging.warning('Trying to send Webhook, but one of the failed')
         return
-
 
 def main(settings):
     try:
@@ -179,8 +191,12 @@ def main(settings):
         logging.critical("Something went wrong when trying to obtain the openings")
         return
 
-    msg = 'Found new appointment(s) in location %s on %s (current is on %s)!' % (settings.get("enrollment_location_id"), dates[0], current_apt.strftime('%B %d, %Y @ %I:%M%p'))
-    
+    location_id = settings.get("enrollment_location_id")
+    location_name = settings.get("enrollment_location_name")
+    if not location_name:
+            location_name = location_id
+    msg = 'Found new appointment(s) in location %s on %s (current is on %s)!' % (location_name, dates[0], current_apt.strftime('%B %d, %Y @ %I:%M%p'))
+
     logging.info(msg + (' Sending email.' if not settings.get('no_email') else ' Not sending email.'))
 
     if not settings.get('no_email'):
