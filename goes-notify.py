@@ -210,7 +210,6 @@ def main(settings):
 
 def _check_settings(config):
     required_settings=(
-        'minimum_interview_date_str',
         'current_interview_date_str',
         'enrollment_location_id'
     )
@@ -241,7 +240,7 @@ if __name__ == '__main__':
 
     # Parse Arguments
     parser = argparse.ArgumentParser(description="Command line script to check for goes openings.")
-    parser.add_argument('--config', dest='configfile', default='%sconfig.json' % pwd, help='Config file to use (default is config.json)')
+    parser.add_argument('--config', dest='configfile', default='%s/config.json' % pwd, help='Config file to use (default is config.json)')
     parser.add_argument('--no-email')
 
     arguments = vars(parser.parse_args())
