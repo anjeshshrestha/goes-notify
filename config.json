@@ -1,5 +1,5 @@
 {
-  "current_interview_date_str": "September 15, 2024",
+  "current_interview_date_str": "March 31, 2025",
   "enrollment_location_id": "5020",
   "enrollment_location_name": "",
   "logfile": "",
@@ -26,5 +26,5 @@
   "twilio_to_number": ["example: +18005551234"],
 
   "notify_webhook": true,
-  "webhooks_urls":["https://discord.com/api/webhooks/1009154350913949807/kE85x2oajb6S9wa8TNCzRwShDsWKW9mcUMe3EJzQT2rQGzx9OawDf_N2hgX3UzrLdRb5"]
+  "webhooks_urls":[]
 }

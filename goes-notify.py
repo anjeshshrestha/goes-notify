@@ -90,12 +90,13 @@ def notify_send_email(dates, current_apt, settings, use_gmail=False):
     except Exception:
         logging.exception('Failed to send succcess e-mail.')
         log(e)
-
+        
+def notify_osx(msg):
+    pass
+    # commands.getstatusoutput("osascript -e 'display notification \"%s\" with title \"Global Entry Notifier\"'" % msg)
 
 def notify_sms(settings, dates):
     for avail_apt in dates:
-
-        subprocess.call(["say", "New appointment! " + avail_apt])
         try:
             from twilio.rest import Client
         except ImportError:
@@ -164,14 +165,13 @@ def main(settings):
             logging.info('No tests available.')
             return
 
-        minimum_apt = datetime.strptime(settings['minimum_interview_date_str'], '%B %d, %Y')
         current_apt = datetime.strptime(settings['current_interview_date_str'], '%B %d, %Y')
         dates = []
         for o in data:
             if o['active']:
                 dt = o['startTimestamp']  # 2017-12-22T15:15
                 dtp = datetime.strptime(dt, '%Y-%m-%dT%H:%M')
-                if minimum_apt < dtp and dtp < current_apt:
+                if dtp < current_apt:
                     dates.append(dtp.strftime('%A, %B %d @ %I:%M%p'))
 
         if not dates:
@@ -197,11 +197,15 @@ def main(settings):
             location_name = location_id
     msg = 'Found new appointment(s) in location %s on %s (current is on %s)!' % (location_name, dates[0], current_apt.strftime('%B %d, %Y @ %I:%M%p'))
 
+    # os.system("say 'appointment found'") 
+    subprocess.call(["say", "New appointment! "])
+    
     logging.info(msg + (' Sending email.' if not settings.get('no_email') else ' Not sending email.'))
 
     if not settings.get('no_email'):
         notify_send_email(dates, current_apt, settings, use_gmail=settings.get('use_gmail'))
-
+    if settings.get('notify_osx'):
+        notify_osx(msg)
     if settings.get('twilio_account_sid'):
         notify_sms(settings, dates)
 
