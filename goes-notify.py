@@ -18,8 +18,6 @@ import subprocess
 
 from datetime import datetime
 from os import path
-from subprocess import check_output
-from distutils.spawn import find_executable
 from email.utils import formataddr
 from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
@@ -92,7 +90,8 @@ def notify_send_email(dates, current_apt, settings, use_gmail=False):
         log(e)
         
 def notify_osx(msg):
-    pass
+     # os.system("say 'appointment found'") 
+    subprocess.call(["say", "New appointment! "])
     # commands.getstatusoutput("osascript -e 'display notification \"%s\" with title \"Global Entry Notifier\"'" % msg)
 
 def notify_sms(settings, dates):
@@ -196,9 +195,6 @@ def main(settings):
     if not location_name:
             location_name = location_id
     msg = 'Found new appointment(s) in location %s on %s (current is on %s)!' % (location_name, dates[0], current_apt.strftime('%B %d, %Y @ %I:%M%p'))
-
-    # os.system("say 'appointment found'") 
-    subprocess.call(["say", "New appointment! "])
     
     logging.info(msg + (' Sending email.' if not settings.get('no_email') else ' Not sending email.'))
 

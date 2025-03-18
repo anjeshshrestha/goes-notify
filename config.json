@@ -1,5 +1,5 @@
 {
-  "current_interview_date_str": "March 31, 2025",
+  "current_interview_date_str": "August 31, 2025",
   "enrollment_location_id": "5020",
   "enrollment_location_name": "",
   "logfile": "",
@@ -19,7 +19,7 @@
   "no_email": true,
   "no_spamming": true,
 
-  "notify_osx": false,
+  "notify_osx": true,
   "twilio_account_sid": "",
   "twilio_auth_token": "",
   "twilio_from_number": "example: +18005551234",
